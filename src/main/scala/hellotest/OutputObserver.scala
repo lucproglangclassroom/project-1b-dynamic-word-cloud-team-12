@@ -1,7 +1,9 @@
 package hellotest
 
 trait OutputObserver {
-  def output(cloud: scala.collection.mutable.Map[String,Int]): Unit
+  type Result
+
+  def output(result: Result): Unit
   
-  def convert(cloud: scala.collection.mutable.Map[String, Int]): String
+  def convert(result: Result): String
 }
