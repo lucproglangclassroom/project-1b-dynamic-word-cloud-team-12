@@ -12,10 +12,9 @@ class WordCloud(c: Int, l: Int, w: Int) {
     input.foreach { word =>
       // Step 1: Filter out words that are shorter than 'minLength'
       if (word.length >= minLength) {
-        
         // Step 2: Add the word to the sliding window
         window = window :+ word
-        
+
         // Step 3: Update the frequency map
         wordFrequency(word) = wordFrequency.getOrElse(word, 0) + 1
 
@@ -23,20 +22,18 @@ class WordCloud(c: Int, l: Int, w: Int) {
         if (window.size > windowSize) {
           val oldestWord = window.head
           window = window.tail
-          
+
           // Decrease frequency of the removed word
           wordFrequency(oldestWord) -= 1
-          if (wordFrequency(oldestWord) == 0) wordFrequency.remove(oldestWord)
+          if (wordFrequency(oldestWord) == 0) wordFrequency.remove(oldestWord) // Safe discard of Option[Int]
         }
 
         // Step 5: Sort by frequency and pick the top 'cloudSize' words
-        val topWords = wordFrequency.toSeq.sortBy(-_._2).take(cloudSize).iterator
+        val topWordsMap: scala.collection.mutable.Map[String, Int] =
+          scala.collection.mutable.Map(wordFrequency.toSeq.sortBy(-_._2).take(cloudSize): _*)
 
-        // Explicit casting to match output.Result type
-        val castedTopWords: output.Result = topWords.asInstanceOf[output.Result]
-
-        // Step 6: Send the cloud to the observer
-        output.output(castedTopWords)
+        // Pass the topWordsMap to the output observer
+        output.output(topWordsMap.asInstanceOf[output.Result]) // Ensure type compatibility by casting
       }
     }
   }
