@@ -1,40 +1,46 @@
 package hellotest
 
-class WordCloud(c: Int, l: Int, w: Int) {
-  private val cloudSize = c
-  private val minLength = l
-  private val windowSize = w
+import org.scalatest.funsuite.AnyFunSuite
+import scala.collection.mutable
 
-  def process(input: Iterator[String], output: OutputObserver): Unit = {
-    var window = List[String]()  // Sliding window for the last 'windowSize' words
-    var wordFrequency = scala.collection.mutable.Map[String, Int]()  // To track word frequencies
 
-    input.foreach { word =>
-      // Step 1: Filter out words that are shorter than 'minLength'
-      if (word.length >= minLength) {
-        // Step 2: Add the word to the sliding window
-        window = window :+ word
+class TestWordCloud extends AnyFunSuite:
+  test("should have an empty count"):
+    val wordCloud = new WordCloud(10, 6, 1000)
+    val input = List()
+    val output = new OutputToList()
 
-        // Step 3: Update the frequency map
-        wordFrequency(word) = wordFrequency.getOrElse(word, 0) + 1
+    wordCloud.process(input.iterator, output)
 
-        // Step 4: If the window exceeds 'windowSize', remove the oldest word
-        if (window.size > windowSize) {
-          val oldestWord = window.head
-          window = window.tail
+    assert(output.list.isEmpty)
 
-          // Decrease frequency of the removed word
-          wordFrequency(oldestWord) -= 1
-          if (wordFrequency(oldestWord) == 0) wordFrequency.remove(oldestWord) // Safe discard of Option[Int]
-        }
+  test("should have a non-empty count"):
+    val wordCloud = new WordCloud(3, 2, 5)
+    val input = List("a", "b", "c", "aa", "bb", "cc", "aa", "bb", "aa", "bb", "a", "b", "c", "a", "a", "a")
+    val output = new OutputToList()
 
-        // Step 5: Sort by frequency and pick the top 'cloudSize' words
-        val topWordsMap: scala.collection.mutable.Map[String, Int] =
-          scala.collection.mutable.Map(wordFrequency.toSeq.sortBy(-_._2).take(cloudSize): _*)
+    wordCloud.process(input.iterator, output)
 
-        // Pass the topWordsMap to the output observer
-        output.output(topWordsMap.asInstanceOf[output.Result]) // Ensure type compatibility by casting
-      }
-    }
+    assert(output.list(0) == mutable.Map[String, Int](("bb", 2), ("aa", 2), ("cc", 1)))
+    assert(output.list(1) == mutable.Map[String, Int](("bb", 2), ("aa", 2), ("cc", 1)))
+    assert(output.list(2) == mutable.Map[String, Int](("bb", 2), ("aa", 2), ("cc", 1)))
+    assert(output.list(3) == mutable.Map[String, Int](("aa", 3), ("bb", 2)))
+    assert(output.list(4) == mutable.Map[String, Int](("aa", 3), ("bb", 2)))
+    assert(output.list(5) == mutable.Map[String, Int](("aa", 4), ("bb", 1)))
+end TestWordCloud
+
+class OutputToList extends OutputObserver:
+  override type Result = mutable.Map[String,Int]
+
+  val list: mutable.Queue[mutable.Map[String, Int]] = mutable.Queue[mutable.Map[String, Int]]()
+
+  override def output(cloud: Result): Unit =
+  {
+    list.append(cloud.clone())
   }
-}
+
+  override def convert(cloud: Result): String =
+  {
+    ""
+  }
+end OutputToList
