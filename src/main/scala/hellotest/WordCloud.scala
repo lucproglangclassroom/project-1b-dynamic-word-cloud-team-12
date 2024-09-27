@@ -6,8 +6,8 @@ class WordCloud(c: Int, l: Int, w: Int) {
   private val windowSize = w
 
   def process(input: Iterator[String], output: OutputObserver): Unit = {
-    var window = scala.collection.mutable.Queue[String]() // Sliding window for the last 'windowSize' words
-    var wordFrequency = scala.collection.mutable.Map[String, Int]() // To track word frequencies
+    val window = scala.collection.mutable.Queue[String]() // Sliding window for the last 'windowSize' words
+    val wordFrequency = scala.collection.mutable.Map[String, Int]() // To track word frequencies
 
     input.foreach { word =>
       // Step 1: Filter out words that are shorter than 'minLength'
@@ -29,14 +29,17 @@ class WordCloud(c: Int, l: Int, w: Int) {
           }
         }
 
-        // Step 5: Sort by frequency and pick the top 'cloudSize' words
-        val topWordsMap: scala.collection.mutable.LinkedHashMap[String, Int] =
-          scala.collection.mutable.LinkedHashMap[String, Int](
-            wordFrequency.toSeq.sortBy(-_._2).take(cloudSize): _*
-          )
+        // Only output once the window size reaches the full limit
+        if (window.size == windowSize) {
+          // Step 5: Sort by frequency (descending) and then alphabetical order (A-Z)
+          val sortedWords = wordFrequency.toSeq
+            .sortBy { case (word, count) => (-count, word) }  // Sort by count descending, then word alphabetically A-Z
 
-        // Pass the topWordsMap to the output observer
-        output.output(topWordsMap.clone().asInstanceOf[output.Result])
+          val topWordsMap = sortedWords.take(cloudSize).iterator
+
+          // Pass the sorted word frequencies to the output observer
+          output.output(topWordsMap.asInstanceOf[output.Result])
+        }
       }
     }
   }
