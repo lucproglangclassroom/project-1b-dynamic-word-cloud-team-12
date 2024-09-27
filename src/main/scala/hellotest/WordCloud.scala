@@ -31,9 +31,9 @@ class WordCloud(c: Int, l: Int, w: Int) {
 
         // Only output once the window size reaches the full limit
         if (window.size == windowSize) {
-          // Step 5: Sort by frequency (descending) and then alphabetical order (A-Z)
+          // Step 5: Sort by frequency (descending) and then by word reverse alphabetically (Z-A)
           val sortedWords = wordFrequency.toSeq
-            .sortBy { case (word, count) => (-count, word) }  // Sort by count descending, then word alphabetically A-Z
+            .sortWith((x, y) => x._2 > y._2 || (x._2 == y._2 && x._1 > y._1)) // Sort by count descending, then word Z-A
 
           val topWordsMap = sortedWords.take(cloudSize).iterator
 
