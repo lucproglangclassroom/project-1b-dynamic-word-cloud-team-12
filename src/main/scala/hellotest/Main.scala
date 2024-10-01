@@ -12,7 +12,7 @@ object Main:
           @arg(short = 'w', doc = "size of the sliding FIFO queue") windowSize: Int = 1000,
           @arg(short = 'k', doc = "update frequency for the word cloud") updateFrequency: Int = 1,
           @arg(short = 'f', doc = "minimum frequency to include a word in the word cloud") minFrequency: Int = 1,
-          @arg(doc = "path to the ignore list file") ignoreFilePath: String = ""): Unit =
+          @arg(short = 'i', doc = "path to the ignore list file") ignoreFilePath: String = ""): Unit =
   {
     val logger = org.log4s.getLogger("logger")
     logger.debug(f"cloudSize: ${cloudSize}, minLength: ${minLength}, windowSize: ${windowSize}, updateFrequency: ${updateFrequency}, minFrequency: ${minFrequency}, ignoreFile: ${ignoreFilePath}")
@@ -24,6 +24,7 @@ object Main:
       } else {
         Set.empty
       }
+    logger.debug(ignoreList.toString)
 
     val lines = scala.io.Source.stdin.getLines()
     val words = {
@@ -37,6 +38,6 @@ object Main:
     wordCloud.process(words, outputObserver)
   }
 
-  def main(args: Array[String]): Any = ParserForMethods(this).runOrExit(args.toIndexedSeq)
+  def main(args: Array[String]): Unit = ParserForMethods(this).runOrExit(args.toIndexedSeq)
 
 end Main

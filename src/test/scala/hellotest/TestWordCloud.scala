@@ -35,19 +35,19 @@ class TestWordCloud extends AnyFunSuite:
 
     wordCloud.process(input.iterator, output)
 
-    assert(output.list(0) sameElements Iterator(("bb", 2), ("cc", 3)))
-    assert(output.list.length === 1) 
+    assert(output.list(0) sameElements Iterator(("bb", 2), ("aa", 2), ("cc", 1)))
+    assert(output.list(1) sameElements Iterator(("cc", 2), ("bb", 2), ("aa", 1)))
+    assert(output.list(2) sameElements Iterator(("cc", 3), ("bb", 1), ("aa", 1)))
 
   test("should ignore words from the ignore list"):
     val ignoreWords = Set("aa", "bb")
-    val wordCloud = new WordCloud(3, 2, 5, 1, 1, ignoreList = ignoreWords)
-    val input = List("aa", "bb", "cc", "aa", "bb", "cc")
+    val wordCloud = new WordCloud(3, 2, 5, ignoreList = ignoreWords)
+    val input = List("aa", "bb", "cc", "aa", "bb", "cc", "cc", "cc", "cc")
     val output = new OutputToList()
 
     wordCloud.process(input.iterator, output)
 
-    assert(output.list(0) sameElements Iterator(("cc", 2)))
-    assert(output.list.length === 1) 
+    assert(output.list(0) sameElements Iterator(("cc", 5)))
 
 end TestWordCloud
 
