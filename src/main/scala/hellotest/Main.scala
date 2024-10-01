@@ -37,6 +37,6 @@ object Main:
     wordCloud.process(words, outputObserver)
   }
 
-  def main(args: Array[String]): Unit = ParserForMethods(this).runOrExit(args.toIndexedSeq)
+  def main(args: Array[String]): Any = ParserForMethods(this).runOrExit(args.toIndexedSeq)
 
 end Main

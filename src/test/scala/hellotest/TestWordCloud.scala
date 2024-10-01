@@ -27,6 +27,28 @@ class TestWordCloud extends AnyFunSuite:
     assert(output.list(3) sameElements Iterator(("aa", 3), ("bb", 2)))
     assert(output.list(4) sameElements Iterator(("aa", 3), ("bb", 2)))
     assert(output.list(5) sameElements Iterator(("aa", 4), ("bb", 1)))
+
+  test("should be case insensitive"):
+    val wordCloud = new WordCloud(3, 2, 5)
+    val input = List("aa", "BB", "Cc", "bb", "Aa", "cc", "cC")
+    val output = new OutputToList()
+
+    wordCloud.process(input.iterator, output)
+
+    assert(output.list(0) sameElements Iterator(("bb", 2), ("cc", 3)))
+    assert(output.list.length === 1) 
+
+  test("should ignore words from the ignore list"):
+    val ignoreWords = Set("aa", "bb")
+    val wordCloud = new WordCloud(3, 2, 5, 1, 1, ignoreList = ignoreWords)
+    val input = List("aa", "bb", "cc", "aa", "bb", "cc")
+    val output = new OutputToList()
+
+    wordCloud.process(input.iterator, output)
+
+    assert(output.list(0) sameElements Iterator(("cc", 2)))
+    assert(output.list.length === 1) 
+
 end TestWordCloud
 
 class OutputToList extends OutputObserver:
