@@ -3,8 +3,6 @@ package hellotest
 class WordCloud(c: Int, 
                 l: Int, 
                 w: Int, 
-                updateFrequency: Int = 1, 
-                minFrequency: Int = 1, 
                 ignoreList: Set[String] = Set.empty
                 ) {
   private val cloudSize = c
@@ -16,6 +14,9 @@ class WordCloud(c: Int,
     val wordFrequency = scala.collection.mutable.Map[String, Int]() // To track word frequencies
 
     input.foreach { word =>
+      // Step 0: Check for SIGPIPE error 
+      if scala.sys.process.stdout.checkError() then sys.exit(1)
+
       // Step 1: Filter out words that are shorter than 'minLength' and check if it's in the ignore list
       val normalizedWord = word.toLowerCase.toString
       if (normalizedWord.length >= minLength && !ignoreList.contains(normalizedWord)) {
