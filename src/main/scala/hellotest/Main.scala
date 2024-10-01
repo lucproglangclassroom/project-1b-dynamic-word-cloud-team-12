@@ -20,7 +20,7 @@ object Main:
     // Read the ignore list from the file if provided
     val ignoreList: Set[String] =
       if (ignoreFilePath.nonEmpty) {
-        Source.fromFile(ignoreFilePath).getLines().map(_.toLowerCase).toSet
+        Source.fromFile(ignoreFilePath).getLines().map(_.toLowerCase.toString).toSet
       } else {
         Set.empty
       }

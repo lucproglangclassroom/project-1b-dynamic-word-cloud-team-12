@@ -1,6 +1,12 @@
 package hellotest
 
-class WordCloud(c: Int, l: Int, w: Int) {
+class WordCloud(c: Int, 
+                l: Int, 
+                w: Int, 
+                updateFrequency: Int = 1, 
+                minFrequency: Int = 1, 
+                ignoreList: Set[String] = Set.empty
+                ) {
   private val cloudSize = c
   private val minLength = l
   private val windowSize = w
@@ -11,7 +17,7 @@ class WordCloud(c: Int, l: Int, w: Int) {
 
     input.foreach { word =>
       // Step 1: Filter out words that are shorter than 'minLength' and check if it's in the ignore list
-      val normalizedWord = word.toLowerCase
+      val normalizedWord = word.toLowerCase.toString
       if (normalizedWord.length >= minLength && !ignoreList.contains(normalizedWord)) {
         // Step 2: Add the word to the sliding window
         window.enqueue(normalizedWord)
