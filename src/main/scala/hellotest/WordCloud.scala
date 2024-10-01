@@ -1,6 +1,10 @@
 package hellotest
 
-class WordCloud(c: Int, l: Int, w: Int) {
+class WordCloud(c: Int, 
+                l: Int, 
+                w: Int, 
+                ignoreList: Set[String] = Set.empty
+                ) {
   private val cloudSize = c
   private val minLength = l
   private val windowSize = w
@@ -10,13 +14,17 @@ class WordCloud(c: Int, l: Int, w: Int) {
     val wordFrequency = scala.collection.mutable.Map[String, Int]() // To track word frequencies
 
     input.foreach { word =>
-      // Step 1: Filter out words that are shorter than 'minLength'
-      if (word.length >= minLength) {
-        // Step 2: Add the word to the sliding window
-        window.enqueue(word)
+      // Step 0: Check for SIGPIPE error 
+      if scala.sys.process.stdout.checkError() then sys.exit(1)
 
+      // Step 1: Filter out words that are shorter than 'minLength' and check if it's in the ignore list
+      val normalizedWord = word.toLowerCase.toString
+      if (normalizedWord.length >= minLength && !ignoreList.contains(normalizedWord)) {
+        // Step 2: Add the word to the sliding window
+        window.enqueue(normalizedWord)
+        
         // Step 3: Update the frequency map
-        wordFrequency(word) = wordFrequency.getOrElse(word, 0) + 1
+        wordFrequency(normalizedWord) = wordFrequency.getOrElse(normalizedWord, 0) + 1
 
         // Step 4: If the window exceeds 'windowSize', remove the oldest word
         if (window.size > windowSize) {
