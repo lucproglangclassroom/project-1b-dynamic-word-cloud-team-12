@@ -50,7 +50,30 @@ object Main:
 
   def run(input: Iterator[String], args: Arguments): Iterator[String] =
   {
-    Iterator.empty
+    // 1. get ignored values
+    val ignoreList = readIgnoreFile(args.ignoreFilePath)
+    
+    // 2. filter ignored values and words that don't meet minimum length
+    val filteredInput = input // DO:
+
+    // 3. create sliding sequences
+    val stringSequences = filteredInput.scanLeft(Seq[String]().empty){ (previous,next) =>
+      accumulateSequence(previous,next,args.windowSize)
+    }
+
+    // 4. discard sequences of non-valid length
+    val validLengthSequences = stringSequences // DO:
+
+    // 5. map counts
+    val wordCounts = stringSequences.map(sequence => countFrequencies(sequence, args.cloudSize))
+
+    // 6. sort maps
+    val sortedCounts = wordCounts.map(map => sortCount(map))
+
+    // 7. convert to strings that can be printed out
+    val resultsConvertedToStrings = wordCounts.map(result => convert(result.iterator))
+
+    resultsConvertedToStrings
   }
 
   def main(args: Array[String]): Unit = ParserForMethods(this).runOrExit(args.toIndexedSeq)
