@@ -3,6 +3,7 @@ package hellotest
 import org.log4s.*
 import mainargs.{main, arg, ParserForMethods, Flag}
 import scala.io.Source
+import scala.collection.immutable.Map
 
 object Main:
 
@@ -30,10 +31,49 @@ object Main:
       lines.flatMap(l => l.split("(?U)[^\\p{Alpha}0-9']+"))
     }
 
-    val wordCloud = new WordCloud(cloudSize, minLength, windowSize, ignoreList)
-    val outputObserver = new ConcreteOutputObserver()
+    val result = run(words, Arguments(cloudSize, minLength, windowSize, ignoreFilePath))
 
-    wordCloud.process(words, outputObserver)
+    result
+      // terminate on I/O error such as SIGPIPE
+      .takeWhile: _ =>
+        !scala.sys.process.stdout.checkError()
+      .foreach: r =>
+        println(r)
+  }
+
+  case class Arguments(
+    cloudSize: Int,
+    minLength: Int,
+    windowSize: Int,
+    ignoreFilePath: String
+  )
+
+  def run(input: Iterator[String], args: Arguments): Iterator[String] =
+  {
+    // 1. get ignored values
+    val ignoreList = readIgnoreFile(args.ignoreFilePath)
+    
+    // 2. filter ignored values and words that don't meet minimum length
+    val filteredInput = input // DO:
+
+    // 3. create sliding sequences
+    val stringSequences = filteredInput.scanLeft(Seq[String]().empty){ (previous,next) =>
+      accumulateSequence(previous,next,args.windowSize)
+    }
+
+    // 4. discard sequences of non-valid length
+    val validLengthSequences = stringSequences // DO:
+
+    // 5. map counts
+    val wordCounts = stringSequences.map(sequence => countFrequencies(sequence, args.cloudSize))
+
+    // 6. sort maps
+    val sortedCounts = wordCounts.map(map => sortCount(map))
+
+    // 7. convert to strings that can be printed out
+    val resultsConvertedToStrings = wordCounts.map(result => convert(result.iterator))
+
+    resultsConvertedToStrings
   }
 
   def main(args: Array[String]): Unit = ParserForMethods(this).runOrExit(args.toIndexedSeq)
