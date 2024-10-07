@@ -1,18 +1,20 @@
 package hellotest
 
 import scala.io.Source
+import scala.util.{Try,Success,Failure}
 
 def readIgnoreFile(ignoreFilePath: String): Set[String] = {
   // DO: move the code for reading the ignore file content into function.
   // Also, close source and remove redundant toString
-  if (ignoreFilePath.nonEmpty) {
+  Try {
     import scala.language.unsafeNulls
     val file = Source.fromFile(ignoreFilePath);
     val output = file.getLines().flatMap(l => l.split("(?U)[^\\p{Alpha}0-9']+")).toSet;
     file.close();
     output
-  } else {
-    Set.empty
+  } match {
+    case Success(ignored) => ignored
+    case Failure(exception) => Set.empty
   }
 }
 
