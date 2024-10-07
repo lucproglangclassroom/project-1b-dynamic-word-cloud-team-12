@@ -9,7 +9,7 @@ class TestFunctional extends AnyFunSuite:
     assert(result == Set.empty)
 
   test("when an ignore file is specified, it should create a non-empty ignore set"):
-    val result = readIgnoreFile("./test_ignore.txt")
+    val result = readIgnoreFile("src/test/scala/hellotest/test_ignore.txt")
     assert(result == Set("aa","bb"))
 
   test("if window size of sequence is not reached, then append next element"):
