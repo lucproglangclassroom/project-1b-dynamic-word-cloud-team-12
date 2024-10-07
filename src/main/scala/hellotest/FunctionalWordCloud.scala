@@ -1,9 +1,19 @@
 package hellotest
 
+import scala.io.Source
+
 def readIgnoreFile(ignoreFilePath: String): Set[String] = {
   // DO: move the code for reading the ignore file content into function.
   // Also, close source and remove redundant toString
-  Set.empty
+  if (ignoreFilePath.nonEmpty) {
+    import scala.language.unsafeNulls
+    val file = Source.fromFile(ignoreFilePath);
+    val output = file.getLines().flatMap(l => l.split("(?U)[^\\p{Alpha}0-9']+")).toSet;
+    file.close();
+    output
+  } else {
+    Set.empty
+  }
 }
 
 def accumulateSequence(seq: Seq[String], next: String, windowSize: Int): Seq[String] = {
