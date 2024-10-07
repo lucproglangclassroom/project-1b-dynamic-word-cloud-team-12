@@ -19,7 +19,11 @@ def readIgnoreFile(ignoreFilePath: String): Set[String] = {
 def accumulateSequence(seq: Seq[String], next: String, windowSize: Int): Seq[String] = {
   // DO: accumulate sequence.
   // ex: [1,2,3],4,5 => [1,2,3,4] | [1,2,3,4,5],6,5 => [2,3,4,5,6]
-  Seq.empty
+  if (seq.length < windowSize) {
+    seq :+ next
+  } else {
+    seq.drop(1) :+ next
+  }
 }
 
 def countFrequencies(seq: Seq[String], cloudSize: Int): Map[String, Int] = 
