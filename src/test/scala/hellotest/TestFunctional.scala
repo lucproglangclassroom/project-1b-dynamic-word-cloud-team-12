@@ -12,6 +12,18 @@ class TestFunctional extends AnyFunSuite:
     val result = readIgnoreFile("src/test/scala/hellotest/test_ignore.txt")
     assert(result == Set("aa","bb"))
 
+  test("when input is received, it should be filtered by length"):
+    val testInput = Seq[String]("aa","b","ccc")
+    val result = filterInput(testInput.iterator, Set.empty, 2)
+    
+    assert(result sameElements Seq("aa","ccc"))
+
+  test("when input is received, it should be filtered by the ignore set"):
+    val testInput = Seq[String]("aa","bb","c","cc","ccc","dd")
+    val result = filterInput(testInput.iterator, Set("aa","cc"), 1)
+    
+    assert(result sameElements Seq("bb","c","ccc","dd"))
+
   test("if window size of sequence is not reached, then append next element"):
     val sequence = Seq.empty
     val next = "word"
