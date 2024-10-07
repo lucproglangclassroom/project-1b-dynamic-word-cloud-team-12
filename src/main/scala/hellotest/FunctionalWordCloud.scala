@@ -16,6 +16,10 @@ def readIgnoreFile(ignoreFilePath: String): Set[String] = {
   }
 }
 
+def filterInput(input: Iterator[String], ignoreList: Set[String], minLength: Int): Iterator[String] = {
+  input.filterNot(word => {ignoreList(word) || word.length < minLength})
+}
+
 def accumulateSequence(seq: Seq[String], next: String, windowSize: Int): Seq[String] = {
   // DO: accumulate sequence.
   // ex: [1,2,3],4,5 => [1,2,3,4] | [1,2,3,4,5],6,5 => [2,3,4,5,6]
