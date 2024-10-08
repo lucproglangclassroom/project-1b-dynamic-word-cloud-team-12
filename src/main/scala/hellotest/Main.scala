@@ -54,7 +54,7 @@ object Main:
     val ignoreList = readIgnoreFile(args.ignoreFilePath)
     
     // 2. filter ignored values and words that don't meet minimum length
-    val filteredInput = input // DO:
+    val filteredInput = filterInput(input, ignoreList, args.minLength) // DO:
 
     // 3. create sliding sequences
     val stringSequences = filteredInput.scanLeft(Seq[String]().empty){ (previous,next) =>
