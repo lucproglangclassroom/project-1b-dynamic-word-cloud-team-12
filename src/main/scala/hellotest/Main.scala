@@ -62,10 +62,10 @@ object Main:
     }
 
     // 4. discard sequences of non-valid length
-    val validLengthSequences = stringSequences // DO:
+    val validLengthSequences = stringSequences.filter(seq => seq.length >= args.minLength)
 
     // 5. map counts
-    val wordCounts = stringSequences.map(sequence => countFrequencies(sequence, args.cloudSize))
+    val wordCounts = validLengthSequences.map(sequence => countFrequencies(sequence, args.cloudSize))
 
     // 6. sort maps
     val sortedCounts = wordCounts.map(map => sortCount(map))

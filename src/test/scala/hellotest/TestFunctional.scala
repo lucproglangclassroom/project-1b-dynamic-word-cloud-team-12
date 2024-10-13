@@ -43,16 +43,18 @@ class TestFunctional extends AnyFunSuite:
     assert(result == Seq("b","c","d"))
 
   test("given sequence of words, create map of their counts"):
-    val sequence = Seq("aa","bb","cc","dd")
+    val sequence = Seq("aa", "bb", "cc", "dd", "aa")
     val cloudSize = 3
-    
+
     val result = countFrequencies(sequence,cloudSize)
     
-    assert(result == Map(("bb",2),("cc",1),("aa",1)))
+    assert(result == Map(("aa", 2), ("bb", 1), ("cc", 1)))
 
   test("given counts, sort them into iterator"):
-    val result = sortCount(Map(("bb",2),("cc",1),("aa",1)))
-    assert(result sameElements Iterator(("bb",2),("cc",1),("aa",1)))
+    val result = sortCount(Map(("bb", 2), ("cc", 1), ("aa", 1)))
+    val expected = Iterator(("bb", 2), ("aa", 1), ("cc", 1))
+
+    assert(result sameElements expected)
 
   test("convert iterator into string that can be printed"):
     val result = convert(Iterator(("bb",2),("cc",1),("aa",1)))
