@@ -58,5 +58,5 @@ def sortCount(map: Map[String,Int]): Iterator[(String,Int)] =
 
 def convert(wordCount: Iterator[(String, Int)]): String = {
   // DO: Take in iterator of word counts and convert into a string (ex: Iterator(("bb",2),("aa",2)) -> "bb: 2 aa: 2")
-  wordCount.toSeq.sortBy(-_._2).map { case (word, count) => s"$word: $count" }.mkString(" ")
+  wordCount.map { case (word, count) => s"$word: $count" }.mkString(" ")
 }
