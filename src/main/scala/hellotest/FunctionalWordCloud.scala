@@ -32,7 +32,7 @@ def accumulateSequence(seq: Seq[String], next: String, windowSize: Int): Seq[Str
   }
 }
 
-def countFrequencies(seq: Seq[String], cloudSize: Int): Map[String, Int] = 
+def countFrequencies(seq: Seq[String], cloudSize: Int, minFrequency: Int): Map[String, Int] = 
 {
   // DO: return a map that counts how many times each string appears in the
     // Count frequencies of each word
@@ -41,6 +41,7 @@ def countFrequencies(seq: Seq[String], cloudSize: Int): Map[String, Int] =
         .view
         .mapValues(_.size)
         .toMap
+        .filter { case (_, count) => count >= minFrequency } // Filter words based on the minimum frequency
 
     wordCounts.toSeq
         .sortBy { case (word, count) => (-count, word) } // Sort by count descending, then word ascending
@@ -65,8 +66,8 @@ def getValidLengthSequences(sequences: Iterator[Seq[String]], minLength: Int): I
   sequences.filter(seq => seq.length >= minLength)
 }
 
-def mapWordCounts(sequences: Iterator[Seq[String]], cloudSize: Int): Iterator[Map[String, Int]] = {
-  sequences.map(sequence => countFrequencies(sequence, cloudSize))
+def mapWordCounts(sequences: Iterator[Seq[String]], cloudSize: Int, minFrequency: Int): Iterator[Map[String, Int]] = {
+  sequences.map(sequence => countFrequencies(sequence, cloudSize, minFrequency))
 }
 
 def sortWordCounts(wordCounts: Iterator[Map[String, Int]]): Iterator[(String, Int)] = {

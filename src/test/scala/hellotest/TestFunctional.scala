@@ -45,8 +45,9 @@ class TestFunctional extends AnyFunSuite:
   test("given sequence of words, create map of their counts"):
     val sequence = Seq("aa", "bb", "cc", "dd", "aa")
     val cloudSize = 3
+    val minFrequency = 1
 
-    val result = countFrequencies(sequence,cloudSize)
+    val result = countFrequencies(sequence,cloudSize, minFrequency)
     
     assert(result == Map(("aa", 2), ("bb", 1), ("cc", 1)))
 
