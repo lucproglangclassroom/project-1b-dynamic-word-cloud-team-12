@@ -60,6 +60,28 @@ class TestFunctional extends AnyFunSuite:
     val result = convert(Iterator(("bb",2),("cc",1),("aa",1)))
     assert(result == "bb: 2 cc: 1 aa: 1")
 
+  test("getValidLengthSequences should filter sequences by minimum length"):
+    val input: Iterator[Seq[String]] = Iterator(
+      Seq("apple", "banana", "cherry"),
+      Seq("date", "fig"),
+      Seq("grape", "kiwi", "lemon", "melon")
+    )
+    val result = getValidLengthSequences(input, 3).toList
+    val expected = List(
+      Seq("apple", "banana", "cherry"),
+      Seq("grape", "kiwi", "lemon", "melon")
+    )
+    assert(result == expected)
+
+  test("convertResults should convert word counts to string format"):
+    val input: Iterator[(String, Int)] = Iterator(
+      ("apple", 2),
+      ("banana", 3)
+    )
+    val result = convertResults(input).toList
+    val expected = List("apple: 2", "banana: 3")
+    assert(result == expected)
+
 end TestFunctional
 
 

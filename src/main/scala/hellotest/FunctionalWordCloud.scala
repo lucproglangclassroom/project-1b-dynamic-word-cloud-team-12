@@ -60,3 +60,19 @@ def convert(wordCount: Iterator[(String, Int)]): String = {
   // DO: Take in iterator of word counts and convert into a string (ex: Iterator(("bb",2),("aa",2)) -> "bb: 2 aa: 2")
   wordCount.map { case (word, count) => s"$word: $count" }.mkString(" ")
 }
+
+def getValidLengthSequences(sequences: Iterator[Seq[String]], minLength: Int): Iterator[Seq[String]] = {
+  sequences.filter(seq => seq.length >= minLength)
+}
+
+def mapWordCounts(sequences: Iterator[Seq[String]], cloudSize: Int): Iterator[Map[String, Int]] = {
+  sequences.map(sequence => countFrequencies(sequence, cloudSize))
+}
+
+def sortWordCounts(wordCounts: Iterator[Map[String, Int]]): Iterator[(String, Int)] = {
+  wordCounts.flatMap(sortCount)
+}
+
+def convertResults(sortedCounts: Iterator[(String, Int)]): Iterator[String] = {
+  sortedCounts.map(count => convert(Iterator(count)))
+}
