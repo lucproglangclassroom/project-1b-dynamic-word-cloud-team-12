@@ -11,7 +11,8 @@ object Main:
   def run(@arg(short = 'c', doc = "size of the sliding word cloud") cloudSize: Int = 10,
           @arg(short = 'l', doc = "minimum word length to be considered") minLength: Int = 6,
           @arg(short = 'w', doc = "size of the sliding FIFO queue") windowSize: Int = 1000,
-          @arg(short = 'i', doc = "path to the ignore list file") ignoreFilePath: String = ""): Unit =
+          @arg(short = 'i', doc = "path to the ignore list file") ignoreFilePath: String = "",
+          @arg(short = 'f', doc = "minimum frequency for a word to be included in the word cloud") minFrequency: Int = 1): Unit =
   {
     val logger = org.log4s.getLogger("logger")
     logger.debug(f"cloudSize: ${cloudSize}, minLength: ${minLength}, windowSize: ${windowSize}, ignoreFile: ${ignoreFilePath}")
@@ -31,7 +32,7 @@ object Main:
       lines.flatMap(l => l.split("(?U)[^\\p{Alpha}0-9']+"))
     }
 
-    val result = run(words, Arguments(cloudSize, minLength, windowSize, ignoreFilePath))
+    val result = run(words, Arguments(cloudSize, minLength, windowSize, ignoreFilePath, minFrequency))
 
     result
       // terminate on I/O error such as SIGPIPE
@@ -45,7 +46,8 @@ object Main:
     cloudSize: Int,
     minLength: Int,
     windowSize: Int,
-    ignoreFilePath: String
+    ignoreFilePath: String,
+    minFrequency: Int // new field
   )
 
   def run(input: Iterator[String], args: Arguments): Iterator[String] =
@@ -62,16 +64,16 @@ object Main:
     }
 
     // 4. discard sequences of non-valid length
-    val validLengthSequences = stringSequences // DO:
+    val validLengthSequences = getValidLengthSequences(stringSequences, args.windowSize)
 
     // 5. map counts
-    val wordCounts = stringSequences.map(sequence => countFrequencies(sequence, args.cloudSize))
+    val wordCounts = mapWordCounts(validLengthSequences, args.cloudSize, args.minFrequency) // pass minFrequency here
 
     // 6. sort maps
-    val sortedCounts = wordCounts.map(map => sortCount(map))
+    val sortedCounts = sortWordCounts(wordCounts)
 
     // 7. convert to strings that can be printed out
-    val resultsConvertedToStrings = wordCounts.map(result => convert(result.iterator))
+    val resultsConvertedToStrings = convertResults(sortedCounts)
 
     resultsConvertedToStrings
   }

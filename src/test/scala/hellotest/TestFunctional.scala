@@ -43,20 +43,63 @@ class TestFunctional extends AnyFunSuite:
     assert(result == Seq("b","c","d"))
 
   test("given sequence of words, create map of their counts"):
-    val sequence = Seq("aa","bb","cc","dd")
+    val sequence = Seq("aa", "bb", "cc", "dd", "aa")
     val cloudSize = 3
+    val minFrequency = 2
+
+    val result = countFrequencies(sequence,cloudSize, minFrequency)
     
-    val result = countFrequencies(sequence,cloudSize)
-    
-    assert(result == Map(("bb",2),("cc",1),("aa",1)))
+    assert(result == Map(("aa", 2)))
 
   test("given counts, sort them into iterator"):
-    val result = sortCount(Map(("bb",2),("cc",1),("aa",1)))
-    assert(result sameElements Iterator(("bb",2),("cc",1),("aa",1)))
+    val result = sortCount(Map(("bb", 2), ("cc", 1), ("aa", 1)))
+    val expected = Iterator(("bb", 2), ("aa", 1), ("cc", 1))
+
+    assert(result sameElements expected)
 
   test("convert iterator into string that can be printed"):
     val result = convert(Iterator(("bb",2),("cc",1),("aa",1)))
     assert(result == "bb: 2 cc: 1 aa: 1")
+
+  test("getValidLengthSequences should filter sequences by minimum length"):
+    val input: Iterator[Seq[String]] = Iterator(
+      Seq("apple", "banana", "cherry"),
+      Seq("date", "fig"),
+      Seq("grape", "kiwi", "lemon", "melon")
+    )
+    val result = getValidLengthSequences(input, 3).toList
+    val expected = List(
+      Seq("apple", "banana", "cherry"),
+      Seq("grape", "kiwi", "lemon", "melon")
+    )
+    assert(result == expected)
+
+  test("convertResults should convert word counts to string format"):
+    val input: Iterator[Iterator[(String, Int)]] = Iterator(
+      Iterator(
+        ("apple", 3), ("banana", 2)
+      ),
+      Iterator(
+        ("banana", 3), ("apple", 2)
+      )
+    )
+    val result = convertResults(input)
+    val expected = Iterator(
+      "apple: 3 banana: 2",
+      "banana: 3 apple: 2"
+    )
+    assert(result sameElements expected)
+
+  test("run"):
+    val result = Main.run(Iterator("a", "b", "c", "aa", "bb", "cc", "aa", "bb", "aa", "bb", "a", "b", "c", "aa", "aa", "aa"), Arguments(3, 2, 5, "", 1))
+    assert(result sameElements Iterator(
+      "aa: 2 bb: 2 cc: 1",
+      "aa: 2 bb: 2 cc: 1",
+      "aa: 2 bb: 2 cc: 1",
+      "aa: 3 bb: 2",
+      "aa: 3 bb: 2",
+      "aa: 4 bb: 1"
+    ))
 
 end TestFunctional
 
