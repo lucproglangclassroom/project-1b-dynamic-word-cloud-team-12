@@ -64,7 +64,7 @@ object Main:
     }
 
     // 4. discard sequences of non-valid length
-    val validLengthSequences = getValidLengthSequences(stringSequences, args.minLength)
+    val validLengthSequences = getValidLengthSequences(stringSequences, args.windowSize)
 
     // 5. map counts
     val wordCounts = mapWordCounts(validLengthSequences, args.cloudSize, args.minFrequency) // pass minFrequency here

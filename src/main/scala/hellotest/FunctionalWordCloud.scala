@@ -70,10 +70,10 @@ def mapWordCounts(sequences: Iterator[Seq[String]], cloudSize: Int, minFrequency
   sequences.map(sequence => countFrequencies(sequence, cloudSize, minFrequency))
 }
 
-def sortWordCounts(wordCounts: Iterator[Map[String, Int]]): Iterator[(String, Int)] = {
-  wordCounts.flatMap(sortCount)
+def sortWordCounts(wordCounts: Iterator[Map[String, Int]]): Iterator[Iterator[(String, Int)]] = {
+  wordCounts.map(sortCount)
 }
 
-def convertResults(sortedCounts: Iterator[(String, Int)]): Iterator[String] = {
-  sortedCounts.map(count => convert(Iterator(count)))
-}
+def convertResults(sortedCounts: Iterator[Iterator[(String, Int)]]): Iterator[String] = {
+  sortedCounts.map(count => convert(count))
+} 

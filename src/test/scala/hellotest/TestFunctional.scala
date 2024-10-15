@@ -45,11 +45,11 @@ class TestFunctional extends AnyFunSuite:
   test("given sequence of words, create map of their counts"):
     val sequence = Seq("aa", "bb", "cc", "dd", "aa")
     val cloudSize = 3
-    val minFrequency = 1
+    val minFrequency = 2
 
     val result = countFrequencies(sequence,cloudSize, minFrequency)
     
-    assert(result == Map(("aa", 2), ("bb", 1), ("cc", 1)))
+    assert(result == Map(("aa", 2)))
 
   test("given counts, sort them into iterator"):
     val result = sortCount(Map(("bb", 2), ("cc", 1), ("aa", 1)))
@@ -75,13 +75,31 @@ class TestFunctional extends AnyFunSuite:
     assert(result == expected)
 
   test("convertResults should convert word counts to string format"):
-    val input: Iterator[(String, Int)] = Iterator(
-      ("apple", 2),
-      ("banana", 3)
+    val input: Iterator[Iterator[(String, Int)]] = Iterator(
+      Iterator(
+        ("apple", 3), ("banana", 2)
+      ),
+      Iterator(
+        ("banana", 3), ("apple", 2)
+      )
     )
-    val result = convertResults(input).toList
-    val expected = List("apple: 2", "banana: 3")
-    assert(result == expected)
+    val result = convertResults(input)
+    val expected = Iterator(
+      "apple: 3 banana: 2",
+      "banana: 3 apple: 2"
+    )
+    assert(result sameElements expected)
+
+  test("run"):
+    val result = Main.run(Iterator("a", "b", "c", "aa", "bb", "cc", "aa", "bb", "aa", "bb", "a", "b", "c", "aa", "aa", "aa"), Arguments(3, 2, 5, "", 1))
+    assert(result sameElements Iterator(
+      "aa: 2 bb: 2 cc: 1",
+      "aa: 2 bb: 2 cc: 1",
+      "aa: 2 bb: 2 cc: 1",
+      "aa: 3 bb: 2",
+      "aa: 3 bb: 2",
+      "aa: 4 bb: 1"
+    ))
 
 end TestFunctional
 
